@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Twogende",
+    "slug": "twogende",
+    "version": "1.0.0",
+    "scheme": "twogende",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "backgroundColor": "#f4ecdc",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#c0512e"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#c0512e"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon-48.png"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-router",
+      "expo-secure-store",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Twogende uses your location to find rides leaving near you."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Twogende needs your photos to upload your ID and vehicle for verification.",
+          "cameraPermission": "Twogende needs your camera to take the selfie that confirms your identity."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

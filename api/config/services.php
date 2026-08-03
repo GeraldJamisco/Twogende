@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    /*
+     * Google Places (New). Server-side only this key is never sent to the
+     * app. Restrict it to the Places API and to this server's IP in the
+     * Google Cloud console.
+     */
+    'google_places' => [
+        'key' => env('GOOGLE_PLACES_KEY'),
+        'autocomplete_url' => 'https://places.googleapis.com/v1/places:autocomplete',
+        'details_url' => 'https://places.googleapis.com/v1/places',
+        'nearby_url' => 'https://places.googleapis.com/v1/places:searchNearby',
+    ],
+
 ];

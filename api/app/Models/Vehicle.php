@@ -50,9 +50,14 @@ class Vehicle extends Model
         return $this->status === VerificationStatus::Approved;
     }
 
-    /** e.g. "Silver Toyota Wish" */
+    /**
+     * e.g. "Silver Toyota Premio".
+     *
+     * `model` is optional: the verification screen collects make and model as
+     * one field, so the whole string usually sits in `make`.
+     */
     public function description(): string
     {
-        return trim("{$this->colour} {$this->make} {$this->model}");
+        return trim(implode(' ', array_filter([$this->colour, $this->make, $this->model])));
     }
 }

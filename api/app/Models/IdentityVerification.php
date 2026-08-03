@@ -13,8 +13,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'document_type', 'document_number', 'full_name_on_document',
     'front_image_path', 'back_image_path', 'selfie_image_path',
 ])]
-// Document numbers and image keys never leave the server in an API response.
-#[Hidden(['document_number', 'front_image_path', 'back_image_path', 'selfie_image_path'])]
+// Document numbers, dates of birth and image keys never leave the server in an
+// API response. IdentityVerificationResource is the only thing that renders
+// this model, and it exposes status alone.
+#[Hidden(['document_number', 'date_of_birth', 'front_image_path', 'back_image_path', 'selfie_image_path'])]
 class IdentityVerification extends Model
 {
     protected function casts(): array
@@ -22,6 +24,7 @@ class IdentityVerification extends Model
         return [
             'document_type' => IdentityDocumentType::class,
             'status' => VerificationStatus::class,
+            'date_of_birth' => 'date',
             'reviewed_at' => 'datetime',
         ];
     }

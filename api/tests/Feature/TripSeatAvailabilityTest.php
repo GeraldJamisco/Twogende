@@ -22,7 +22,7 @@ class TripSeatAvailabilityTest extends TestCase
     {
         $trip = Trip::factory()->withSeats(3)->create();
 
-        DB::transaction(fn() => $this->assertTrue($trip->claimSeats(1)));
+        DB::transaction(fn () => $this->assertTrue($trip->claimSeats(1)));
 
         $this->assertSame(2, $trip->fresh()->seats_available);
     }
@@ -31,7 +31,7 @@ class TripSeatAvailabilityTest extends TestCase
     {
         $trip = Trip::factory()->withSeats(2)->create();
 
-        DB::transaction(fn() => $this->assertFalse($trip->claimSeats(3)));
+        DB::transaction(fn () => $this->assertFalse($trip->claimSeats(3)));
 
         $this->assertSame(2, $trip->fresh()->seats_available, 'A refused claim must not touch the count.');
     }
@@ -40,8 +40,8 @@ class TripSeatAvailabilityTest extends TestCase
     {
         $trip = Trip::factory()->withSeats(1)->create();
 
-        DB::transaction(fn() => $this->assertTrue($trip->claimSeats(1)));
-        DB::transaction(fn() => $this->assertFalse($trip->claimSeats(1)));
+        DB::transaction(fn () => $this->assertTrue($trip->claimSeats(1)));
+        DB::transaction(fn () => $this->assertFalse($trip->claimSeats(1)));
 
         $this->assertSame(0, $trip->fresh()->seats_available);
     }
@@ -64,7 +64,7 @@ class TripSeatAvailabilityTest extends TestCase
     {
         $trip = Trip::factory()->withSeats(3)->create();
 
-        DB::transaction(fn() => $trip->claimSeats(1));
+        DB::transaction(fn () => $trip->claimSeats(1));
         $trip->releaseSeats(2); // one more than was ever taken
 
         $this->assertSame(3, $trip->fresh()->seats_available);

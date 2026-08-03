@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 #[Fillable(['seats', 'message'])]
 class Booking extends Model
@@ -23,6 +24,12 @@ class Booking extends Model
             'contribution_per_seat' => 'integer',
             'total_contribution' => 'integer',
             'responded_at' => 'datetime',
+            'passenger_located_at' => 'datetime',
+            'driver_arrived_at' => 'datetime',
+            'passenger_lat' => 'float',
+            'passenger_lng' => 'float',
+            'pickup_lat' => 'float',
+            'pickup_lng' => 'float',
             'cancelled_at' => 'datetime',
             'completed_at' => 'datetime',
         ];
@@ -40,10 +47,41 @@ class Booking extends Model
         return $this->belongsTo(User::class, 'passenger_id');
     }
 
+    /**
+     * The conversation on this booking. A booking is the only reason two
+     * people on Twogende can message each other.
+     *
+     * @return HasMany<Message, $this>
+     */
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class);
+    }
+
     /** @return HasMany<Rating, $this> */
     public function ratings(): HasMany
     {
         return $this->hasMany(Rating::class);
+    }
+
+    /**
+     * When this booking's conversation stops accepting messages.
+     *
+     * The chat screen promises people a date; enforcing it here is what makes
+     * that promise true rather than decoration.
+     */
+    public function chatClosesAt(): ?Carbon
+    {
+        return $this->trip?->departure_at
+            ?->copy()
+            ->addHours((int) config('twogende.chat.open_hours'));
+    }
+
+    public function chatIsOpen(): bool
+    {
+        $closesAt = $this->chatClosesAt();
+
+        return $closesAt !== null && $closesAt->isFuture();
     }
 
     /**

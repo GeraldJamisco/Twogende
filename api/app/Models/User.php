@@ -13,8 +13,18 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'phone', 'email', 'password', 'photo_path', 'bio'])]
-#[Hidden(['password', 'remember_token'])]
+/*
+ * No password: a verified phone number is the only credential.
+ *
+ * `name` is the *display* name — whatever this person chose to be called, very
+ * often a nickname. It is what appears on trip cards, profiles and greetings.
+ *
+ * It is deliberately not their legal name. That is captured separately, during
+ * identity verification, as identity_verifications.full_name_on_document, and
+ * is used only to check somebody is who they say they are. Never render it.
+ */
+#[Fillable(['name', 'email', 'photo_path', 'bio'])]
+#[Hidden(['remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -31,7 +41,6 @@ class User extends Authenticatable
             'phone_verified_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'identity_verified_at' => 'datetime',
-            'password' => 'hashed',
             'rating_as_driver' => 'float',
             'rating_as_passenger' => 'float',
         ];
