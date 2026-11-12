@@ -13,7 +13,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * "Your driver is here" — generated when a driver's reported position gets
+ * "Your driver is here" - generated when a driver's reported position gets
  * close enough to where a passenger is waiting.
  */
 class ArrivalTest extends TestCase
@@ -116,7 +116,7 @@ class ArrivalTest extends TestCase
             'origin_lat' => self::PICKUP['lat'],
             'origin_lng' => self::PICKUP['lng'],
         ]);
-        // Still pending — the driver hasn't agreed to carry them.
+        // Still pending - the driver hasn't agreed to carry them.
         Booking::factory()->for($trip)->create([
             'pickup_lat' => self::PICKUP['lat'],
             'pickup_lng' => self::PICKUP['lng'],
@@ -130,7 +130,7 @@ class ArrivalTest extends TestCase
     {
         [$trip, $booking] = $this->tripWithConfirmedPassenger();
 
-        // The passenger has walked to Jinja — absurd, but it proves the live
+        // The passenger has walked to Jinja - absurd, but it proves the live
         // position wins over the stated pickup point.
         Sanctum::actingAs($booking->passenger);
         $this->postJson("/api/v1/bookings/{$booking->id}/location", [

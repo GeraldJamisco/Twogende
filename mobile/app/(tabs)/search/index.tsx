@@ -2,7 +2,7 @@ import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { router, useFocusEffect } from "expo-router";
-import { ChevronLeft, Clock, X } from "lucide-react-native";
+import { ChevronLeft, Clock, X } from "../../../src/icons";
 import { useCallback, useState } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -188,7 +188,7 @@ export default function SearchForm() {
             <Text style={styles.timeValue}>{time ? formatClock(time) : "Any"}</Text>
 
             {/*
-              A chosen time has to be undoable — otherwise "any time" is a
+              A chosen time has to be undoable - otherwise "any time" is a
               state you can only reach by leaving the screen.
             */}
             {time ? (
@@ -252,7 +252,7 @@ export default function SearchForm() {
                 <Pressable
                   key={`${search.searchedAt}-${index}`}
                   onPress={() => {
-                    // Fill the form and go — a recent search is a search
+                    // Fill the form and go - a recent search is a search
                     // somebody already decided on, so making them tap
                     // "Search rides" again is a step for nothing.
                     setOrigin(search.origin);

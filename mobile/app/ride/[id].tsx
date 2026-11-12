@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { ChevronLeft, ShieldCheck } from "lucide-react-native";
+import { ChevronLeft, ShieldCheck } from "../../src/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -22,14 +22,14 @@ import {
   type Booking,
 } from "../../src/api/bookings";
 import { ApiError, NetworkError } from "../../src/api/client";
-import { cancelTrip, showTrip } from "../../src/api/trips";
+import { completeTrip, showTrip, startTrip } from "../../src/api/trips";
 import { Avatar } from "../../src/components/Avatar";
 import { formatContribution, formatDayLabel, formatTime } from "../../src/lib/format";
 import { useAuth } from "../../src/state/AuthContext";
 import { colors, fonts, inkTints } from "../../src/theme";
 import type { Trip } from "../../src/types";
 
-/** Implements "Twogende Ride Posted.dc.html" — the driver's view of their trip. */
+/** Implements "Twogende Ride Posted.dc.html" - the driver's view of their trip. */
 export default function RidePosted() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { token } = useAuth();
@@ -39,6 +39,8 @@ export default function RidePosted() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
+  /** Separate from booking responses: this one blocks the banner action. */
+  const [lifecycleBusy, setLifecycleBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -91,32 +93,81 @@ export default function RidePosted() {
     }
   }
 
-  function confirmCancel() {
+  /**
+   * Setting off, and finishing.
+   *
+   * These are the only two calls that move a trip through its lifecycle, and
+   * until now nothing in the app made them - which left every screen after a
+   * ride unreachable: payment, both rating screens, the earnings summary.
+   *
+   * `complete()` is the one event that closes the bookings, fixes the
+   * commission on each seat and unlocks ratings, all in one transaction. It
+   * cannot be undone, so it asks first. Starting is harmless and does not.
+   */
+  async function begin() {
+    if (!token || !trip) return;
+
+    setLifecycleBusy(true);
+    try {
+      await startTrip(token, trip.id);
+      await load();
+    } catch (e) {
+      Alert.alert(
+        "Could not start the trip",
+        e instanceof ApiError || e instanceof NetworkError
+          ? e.message
+          : "Please try again.",
+      );
+    } finally {
+      setLifecycleBusy(false);
+    }
+  }
+
+  function confirmFinish() {
+    if (!trip) return;
+
+    const riders = bookings.filter((b) => b.status === "accepted").length;
+
     Alert.alert(
-      "Cancel this ride?",
-      "Everyone who booked a seat will be told it's off. This cannot be undone.",
+      "Finish this trip?",
+      riders > 0
+        ? `${riders} ${riders === 1 ? "passenger" : "passengers"} will be asked to pay and rate you. This can't be undone.`
+        : "This can't be undone.",
       [
-        { text: "Keep it", style: "cancel" },
-        {
-          text: "Cancel ride",
-          style: "destructive",
-          onPress: async () => {
-            if (!token || !trip) return;
-            try {
-              await cancelTrip(token, trip.id);
-              router.replace("/(tabs)/trips");
-            } catch (e) {
-              Alert.alert(
-                "Could not cancel",
-                e instanceof ApiError || e instanceof NetworkError
-                  ? e.message
-                  : "Please try again.",
-              );
-            }
-          },
-        },
+        { text: "Not yet", style: "cancel" },
+        { text: "Finish trip", style: "destructive", onPress: () => void finish() },
       ],
     );
+  }
+
+  async function finish() {
+    if (!token || !trip) return;
+
+    setLifecycleBusy(true);
+    try {
+      await completeTrip(token, trip.id);
+
+      // Straight to the payoff: what the ride earned, and a rating card per
+      // passenger. It is the only moment a driver reliably rates anyone.
+      router.replace({ pathname: "/earnings/[id]", params: { id: trip.id } });
+    } catch (e) {
+      Alert.alert(
+        "Could not finish the trip",
+        e instanceof ApiError || e instanceof NetworkError
+          ? e.message
+          : "Please try again.",
+      );
+      setLifecycleBusy(false);
+    }
+  }
+
+  /*
+   * A confirm dialog used to stand in for this. Cancelling strands people at
+   * a stage, and the reason is worth collecting, so it gets its own screen.
+   */
+  function goToCancel() {
+    if (!trip) return;
+    router.push({ pathname: "/cancel/[id]", params: { id: trip.id } });
   }
 
   if (loading) {
@@ -178,6 +229,10 @@ export default function RidePosted() {
             status={trip.status}
             route={`${trip.origin.name} → ${trip.destination.name}`}
             when={`${formatDayLabel(trip.departure_at)} ${formatTime(trip.departure_at)}`}
+            departureAt={trip.departure_at}
+            busy={lifecycleBusy}
+            onStart={begin}
+            onFinish={confirmFinish}
           />
 
           <View style={styles.summary}>
@@ -201,7 +256,7 @@ export default function RidePosted() {
                   {/*
                     The design shows an estimated arrival. Nothing in the
                     schema knows one, and a guessed ETA on Kampala roads is
-                    worse than none — see the handover note.
+                    worse than none - see the handover note.
                   */}
                 </View>
               </View>
@@ -292,7 +347,7 @@ export default function RidePosted() {
           </Pressable>
 
           <Pressable
-            onPress={confirmCancel}
+            onPress={goToCancel}
             disabled={!live}
             accessibilityRole="button"
             style={({ pressed }) => [
@@ -318,11 +373,19 @@ function StatusBanner({
   status,
   route,
   when,
+  departureAt,
+  busy,
+  onStart,
+  onFinish,
 }: {
   live: boolean;
   status: Trip["status"];
   route: string;
   when: string;
+  departureAt: string;
+  busy: boolean;
+  onStart: () => void;
+  onFinish: () => void;
 }) {
   const pulse = useRef(new Animated.Value(1)).current;
 
@@ -358,6 +421,21 @@ function StatusBanner({
       ? "Completed"
       : "Cancelled";
 
+  /*
+   * The server won't start or finish a trip before its departure time has
+   * passed (TripPolicy::complete), so the button stays away until then rather
+   * than appearing and being refused. A driver looking at a ride they publish
+   * for tomorrow has nothing to do here yet, and the banner says so.
+   */
+  const departed = new Date(departureAt).getTime() <= Date.now();
+
+  const action =
+    status === "in_progress"
+      ? { label: "Finish", onPress: onFinish }
+      : status === "scheduled" && departed
+        ? { label: "Start trip", onPress: onStart }
+        : null;
+
   return (
     <View style={[styles.banner, !live && styles.bannerQuiet]}>
       <Animated.View style={[styles.bannerDot, { opacity: live ? pulse : 0.5 }]} />
@@ -367,6 +445,26 @@ function StatusBanner({
           {route} · {when}
         </Text>
       </View>
+
+      {action ? (
+        <Pressable
+          onPress={action.onPress}
+          disabled={busy}
+          accessibilityRole="button"
+          hitSlop={6}
+          style={({ pressed }) => [
+            styles.bannerAction,
+            busy && styles.bannerActionBusy,
+            pressed && !busy && styles.pressed,
+          ]}
+        >
+          {busy ? (
+            <ActivityIndicator size="small" color={colors.acaciaDark} />
+          ) : (
+            <Text style={styles.bannerActionLabel}>{action.label}</Text>
+          )}
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -520,6 +618,26 @@ const styles = StyleSheet.create({
     backgroundColor: colors.onAcacia,
   },
   bannerText: { flex: 1 },
+  /*
+   * A cream pill on the acacia banner. The app's primary terracotta would
+   * fight the green it sits on; this reads as the one thing to press without
+   * introducing a colour the banner doesn't already own.
+   */
+  bannerAction: {
+    backgroundColor: colors.onAcacia,
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    minWidth: 78,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bannerActionBusy: { opacity: 0.6 },
+  bannerActionLabel: {
+    fontFamily: fonts.body.extraBold,
+    fontSize: 13,
+    color: colors.acaciaDark,
+  },
   bannerHeadline: {
     fontFamily: fonts.body.extraBold,
     fontSize: 14.5,

@@ -244,7 +244,7 @@ class TripSearchTest extends TestCase
             'after' => now()->setTime(15, 0)->toIso8601String(),
         ])->assertOk()->json('data.*.id');
 
-        // "Today, but not before 3pm" — the two filters have to compose.
+        // "Today, but not before 3pm" - the two filters have to compose.
         $this->assertContains($afternoon->id, $ids);
         $this->assertNotContains($earlyRun->id, $ids);
     }

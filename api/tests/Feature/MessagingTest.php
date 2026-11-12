@@ -255,7 +255,7 @@ class MessagingTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.0.chat.open', true);
 
-        // Past the window, the same conversation reports itself closed — the
+        // Past the window, the same conversation reports itself closed - the
         // Chats screen groups on exactly this.
         $this->travel((int) config('twogende.chat.open_hours') + 3)->hours();
 

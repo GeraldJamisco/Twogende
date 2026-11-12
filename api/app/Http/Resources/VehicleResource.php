@@ -37,13 +37,13 @@ class VehicleResource extends JsonResource
             'status' => $this->status->value,
 
             // Four characters, so a passenger can pick the right car out of a
-            // queue. The full plate is never published — see the class note.
+            // queue. The full plate is never published - see the class note.
             'plate_last4' => $this->plate_last4,
 
             /*
              * How a passenger picks this car out of a queue: the brand and the
              * last four of the plate, and nothing more. The full plate is
-             * never published — see the class note.
+             * never published - see the class note.
              */
             'identifier' => trim(implode(' · ', array_filter([
                 $this->make,

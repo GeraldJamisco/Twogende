@@ -1,4 +1,4 @@
-import { Car, Search } from "lucide-react-native";
+import { Car, Search } from "../icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, fonts, gutter } from "../theme";

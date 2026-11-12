@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['stars', 'comment'])]
+#[Fillable(['stars', 'comment', 'tags'])]
 class Rating extends Model
 {
     public const MIN_STARS = 1;
@@ -18,6 +18,7 @@ class Rating extends Model
     {
         return [
             'stars' => 'integer',
+            'tags' => 'array',
             'ratee_role' => RatedRole::class,
         ];
     }

@@ -1,5 +1,5 @@
 import * as ImagePicker from "expo-image-picker";
-import { Camera, ImagePlus } from "lucide-react-native";
+import { Camera, ImagePlus } from "../../icons";
 import { useState } from "react";
 import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -17,7 +17,7 @@ type Props = {
 };
 
 /**
- * The React Native equivalent of the design's <image-slot> — a tappable
+ * The React Native equivalent of the design's <image-slot> - a tappable
  * placeholder that fills with a photo.
  *
  * The web component lets you drag a file in; on a handset that becomes the

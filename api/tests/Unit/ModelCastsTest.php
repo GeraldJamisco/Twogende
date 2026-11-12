@@ -15,7 +15,7 @@ use Tests\TestCase;
  * or boolean column added to a migration without the matching cast on the
  * model.
  *
- * The symptom is always the same and always far from the cause — a date comes
+ * The symptom is always the same and always far from the cause - a date comes
  * back as a string and blows up on ->diffInMinutes(), or a decimal arrives as
  * a string and quietly fails a comparison. Cheaper to catch here.
  */

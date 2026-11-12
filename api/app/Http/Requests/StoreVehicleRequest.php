@@ -15,7 +15,7 @@ class StoreVehicleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // One field, as the design has it — "Toyota Premio", not a make
+            // One field, as the design has it - "Toyota Premio", not a make
             // and a model to be picked apart.
             'make_and_model' => ['required', 'string', 'min:2', 'max:60'],
             'colour' => ['required', 'string', 'min:2', 'max:30'],
@@ -32,8 +32,7 @@ class StoreVehicleRequest extends FormRequest
             'photo' => ['required', 'image', 'max:'.(int) config('twogende.uploads.max_image_kb')],
 
             /*
-             * Not on the design, but a trip can't be published without it —
-             * StoreTripRequest refuses to sell more seats than the car has.
+             * Not on the design, but a trip can't be published without it - * StoreTripRequest refuses to sell more seats than the car has.
              * Optional here, defaulting to four, so the screen doesn't have to
              * change; see the handover note.
              */

@@ -69,7 +69,7 @@ export function sendLocation(
 }
 
 /**
- * Send a photo. Multipart, so this bypasses the JSON client — and it comes
+ * Send a photo. Multipart, so this bypasses the JSON client - and it comes
  * back as an authorised URL rather than a public one.
  */
 export async function sendImage(

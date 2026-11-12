@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { ChevronLeft, Pencil, Search as SearchIcon } from "lucide-react-native";
+import { ChevronLeft, Pencil, Search as SearchIcon } from "../../../src/icons";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,

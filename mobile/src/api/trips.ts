@@ -9,7 +9,7 @@ export type TripSearchParams = {
   destination_latitude?: number;
   destination_longitude?: number;
   date?: string;
-  /** ISO datetime — "today, but not before 4pm". */
+  /** ISO datetime - "today, but not before 4pm". */
   after?: string;
   seats?: number;
   /** Backs the filter chips. Defaults to departure order. */
@@ -34,7 +34,7 @@ export type PriceSuggestion = {
 };
 
 /**
- * What other drivers ask on this route — the "Suggested USh 12k–18k" line.
+ * What other drivers ask on this route - the "Suggested USh 12k - 18k" line.
  * `data` is null when too few trips exist to say anything useful.
  */
 export function priceSuggestion(
@@ -60,12 +60,50 @@ export function createTrip(token: string, input: CreateTripInput) {
   return request<{ data: Trip }>("/trips", { method: "POST", token, body: input });
 }
 
-/** Calls the trip off. Live bookings are cancelled with it, server-side. */
-export function cancelTrip(token: string, tripId: number, reason?: string) {
+/**
+ * The driver setting off. Stamps started_at, which is what the end-of-trip
+ * summary measures the journey against - the published departure time is a
+ * promise, not a clock.
+ */
+export function startTrip(token: string, tripId: number) {
+  return request<{ data: Trip }>(`/trips/${tripId}/start`, { method: "POST", token });
+}
+
+/**
+ * Finishing the journey. Accepted bookings complete with it, both sides'
+ * trip counts move, and the commission on each seat is fixed - all in one
+ * transaction, server-side.
+ */
+export function completeTrip(token: string, tripId: number) {
+  return request<{ data: Trip }>(`/trips/${tripId}/complete`, { method: "POST", token });
+}
+
+/** One of the fixed reasons the cancel screen offers. `code` is what's stored. */
+export type CancellationReason = { code: string; label: string };
+
+export function cancellationReasons(token: string) {
+  return request<{ data: CancellationReason[] }>("/trips/cancellation-reasons", { token });
+}
+
+/**
+ * Calls the trip off.
+ *
+ * Server-side this also cancels every live booking and writes a notice into
+ * each of those conversations - a reason is required because a cancellation
+ * nobody can explain teaches us nothing about why rides fall through.
+ *
+ * `note` is the driver's own words. Passengers never see it.
+ */
+export function cancelTrip(
+  token: string,
+  tripId: number,
+  reason: string,
+  note?: string,
+) {
   return request<{ data: Trip }>(`/trips/${tripId}/cancel`, {
     method: "POST",
     token,
-    body: { reason },
+    body: { reason, note },
   });
 }
 

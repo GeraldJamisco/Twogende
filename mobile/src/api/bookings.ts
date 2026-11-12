@@ -25,12 +25,21 @@ export type Booking = {
   /** Loaded by showBooking(); absent from list endpoints. */
   trip?: Trip;
   /**
-   * The other party, from the reader's point of view — resolved server-side so
+   * The other party, from the reader's point of view - resolved server-side so
    * the chat screen serves driver and passenger without re-deriving it.
    */
   with?: PublicUser | null;
   /** When this conversation stops accepting messages. Enforced server-side. */
   chat: { closes_at: string | null; open: boolean };
+  /**
+   * Drives the tracking screen's four steps and the home-screen bar. Derived
+   * server-side from the trip, so it can't drift from it.
+   */
+  tracking: {
+    stage: "requested" | "confirmed" | "en_route" | "arrived" | "completed";
+    /** Null until the driver is actually sharing a position. Approximate. */
+    minutes_away: number | null;
+  };
   status: BookingStatus;
   message: string | null;
   contact_unlocked: boolean;
@@ -40,11 +49,19 @@ export type Booking = {
 };
 
 /**
- * One booking with everything the chat header needs — driver, vehicle, route,
+ * One booking with everything the chat header needs - driver, vehicle, route,
  * and when the conversation closes.
  */
 export function showBooking(token: string, bookingId: number) {
   return request<{ data: Booking }>(`/bookings/${bookingId}`, { token });
+}
+
+/**
+ * The ride this passenger is currently on, or null. Polled by the home screen
+ * so the bar appears and clears on its own.
+ */
+export function activeRide(token: string) {
+  return request<{ data: Booking | null }>("/bookings/active", { token });
 }
 
 /** Requests on one of the driver's own trips, pending first. */

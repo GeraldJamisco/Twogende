@@ -13,16 +13,31 @@ import { colors, fonts, inkTints } from "../../src/theme";
 export default function Verify() {
   // `name` is carried from the sign-up screen: the account doesn't exist until
   // the code below is verified, so there was nothing to attach it to earlier.
-  const { phone, name, greetingName, channel } = useLocalSearchParams<{
-    phone: string;
-    name?: string;
-    /** Set when the sign-in screen recognised the number. */
-    greetingName?: string;
-    /** Which channel actually carried the code — "whatsapp" or "sms". */
-    channel?: string;
-  }>();
+  const { phone, name, greetingName, channel, returning } =
+    useLocalSearchParams<{
+      phone: string;
+      name?: string;
+      /** Their display name, when the account has one. Often it doesn't. */
+      greetingName?: string;
+      /** Which channel actually carried the code - "whatsapp" or "sms". */
+      channel?: string;
+      /** "1" when the sign-in screen recognised this number. */
+      returning?: string;
+    }>();
 
   const channelLabel = channel === 'whatsapp' ? 'WhatsApp' : 'SMS';
+
+  /*
+   * Whether to welcome somebody back is a question about the account, not
+   * about the name on it. Seven of the accounts in the database right now are
+   * verified but unnamed - they are still returning users, and greeting them
+   * with "Enter your code" tells them we don't know who they are.
+   */
+  const heading = returning === '1'
+    ? greetingName
+      ? `Welcome back, ${greetingName}`
+      : 'Welcome back'
+    : 'Enter your code';
   const { signIn } = useAuth();
 
   const [code, setCode] = useState("");
@@ -86,9 +101,7 @@ export default function Verify() {
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
-        <Text style={styles.heading}>
-          {greetingName ? `Welcome back, ${greetingName}` : 'Enter your code'}
-        </Text>
+        <Text style={styles.heading}>{heading}</Text>
         <Text style={styles.subheading}>
           We sent a 6-digit code to {phone} via {channelLabel}.
         </Text>

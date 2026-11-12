@@ -80,3 +80,18 @@ function isSameDay(a: Date, b: Date): boolean {
     a.getDate() === b.getDate()
   );
 }
+
+/**
+ * "+256 785 604 703", as the designs write a number.
+ *
+ * Shared rather than local to one screen: the profile, the settings list and
+ * the account row all show the same number and must not disagree about how it
+ * is spaced. Anything that is not a full Ugandan E.164 number is handed back
+ * untouched rather than mangled.
+ */
+export function formatInternational(e164: string): string {
+  const digits = e164.replace(/\D/g, "");
+  if (digits.length !== 12) return e164;
+
+  return `+${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6, 9)} ${digits.slice(9)}`;
+}

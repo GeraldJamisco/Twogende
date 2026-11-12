@@ -1,6 +1,7 @@
 import { Redirect, Tabs } from "expo-router";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
+import { ActiveRideBar } from "../../src/components/ActiveRideBar";
 import { BottomNav } from "../../src/components/BottomNav";
 import { useAuth } from "../../src/state/AuthContext";
 import { colors } from "../../src/theme";
@@ -30,7 +31,18 @@ export default function TabsLayout() {
         headerShown: false,
         sceneStyle: { backgroundColor: colors.cream },
       }}
-      tabBar={(props) => <BottomNav {...props} />}
+      /*
+       * The active-ride bar rides directly above the nav rather than living on
+       * the home screen, so it stays put on every tab for the whole of a
+       * journey. It renders nothing when there's no ride.
+       */
+      tabBar={(props) => (
+        <View>
+          {/* Renders nothing at all when there's no ride, spacing included. */}
+          <ActiveRideBar />
+          <BottomNav {...props} />
+        </View>
+      )}
     >
       <Tabs.Screen name="index" options={{ title: "Home" }} />
       <Tabs.Screen name="trips" options={{ title: "Trips" }} />

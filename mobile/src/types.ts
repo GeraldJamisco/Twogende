@@ -27,6 +27,8 @@ export type PublicUser = {
 
 /** The signed-in user this one does include their own phone. */
 export type Me = PublicUser & {
+  /** The settings screen's two switches. Marketing is opt-in by law. */
+  notifications?: { ride_updates: boolean; marketing: boolean };
   phone: string;
   phone_display: string;
   email: string | null;
@@ -49,7 +51,7 @@ export type Vehicle = {
   /** Four characters, so a passenger can pick the car out of a queue. */
   plate_last4: string | null;
   /**
-   * "Toyota Premio · 402K" — the settled way a vehicle is identified: brand
+   * "Toyota Premio · 402K" - the settled way a vehicle is identified: brand
    * and the last four of the plate, never the whole plate.
    */
   identifier: string;

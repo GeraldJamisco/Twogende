@@ -4,6 +4,80 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Platform commission
+    |--------------------------------------------------------------------------
+    |
+    | The share Twogende keeps out of each completed seat. The rest is the
+    | driver's, who is recovering the cost of a journey they were making
+    | anyway this is a service fee on the introduction, not a cut of a fare.
+    |
+    | Nothing settles yet: no money moves through Twogende until the wallet
+    | lands, so this only decides what the trip summary shows. Rounding is
+    | per seat and to the whole shilling, and the driver is credited the
+    | remainder, so fee + payout always equals what the passenger contributed.
+    |
+    */
+
+    'platform' => [
+        'commission_rate' => (float) env('PLATFORM_COMMISSION_RATE', 0.20),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Where people write to us
+    |--------------------------------------------------------------------------
+    |
+    | Quoted in the privacy policy and the terms, so they live here rather
+    | than being typed into the copy on each screen.
+    |
+    */
+
+    'support' => [
+        'email' => env('SUPPORT_EMAIL', 'support@twogende.ug'),
+        'privacy_email' => env('PRIVACY_EMAIL', 'privacy@twogende.ug'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ratings
+    |--------------------------------------------------------------------------
+    |
+    | Ratings are double-blind: what the other person said about you stays
+    | sealed until you have said your piece. It gives people a reason to
+    | finish the screen, and it stops a rating being written in reply to one
+    | - nobody can retaliate against a score they haven't read.
+    |
+    | The seal can't hold forever, or a rating left by somebody who never
+    | opens the app again would never be seen. After this many days it opens
+    | regardless.
+    |
+    */
+
+    /*
+    |--------------------------------------------------------------------------
+    | Payments
+    |--------------------------------------------------------------------------
+    |
+    | Cash is the only method that works. It always will work - it needs
+    | nothing but two people at a destination - and it is what nearly every
+    | ride in Kampala will settle with anyway.
+    |
+    | Mobile money needs an aggregator in front of MTN and Airtel. Until one is
+    | named here the gateway reports itself unavailable, the payment screen
+    | offers cash alone, and no row is ever written claiming money moved.
+    |
+    */
+
+    'payments' => [
+        'gateway' => env('PAYMENTS_GATEWAY', 'none'),
+    ],
+
+    'ratings' => [
+        'reveal_after_days' => (int) env('RATING_REVEAL_AFTER_DAYS', 14),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | One-time passwords
     |--------------------------------------------------------------------------
     |
@@ -51,6 +125,26 @@ return [
     'sms' => [
         'driver' => env('SMS_DRIVER', 'log'),
         'sender_id' => env('SMS_SENDER_ID', 'Twogende'),
+
+        /*
+         * Africa's Talking. Set SMS_DRIVER=africastalking to use it.
+         *
+         * The sender ID is deliberately empty by default. An alphanumeric
+         * sender ID ("Twogende") has to be registered and approved with
+         * Africa's Talking before it can be used, and sending an unapproved
+         * one is rejected outright rather than falling back to the shared
+         * short code. Leave it blank until the registration comes through.
+         *
+         * The sandbox is a different host and takes the literal username
+         * "sandbox". Nothing sent to it reaches a handset, so it is what
+         * staging should point at.
+         */
+        'africastalking' => [
+            'username' => env('AT_USERNAME'),
+            'api_key' => env('AT_API_KEY'),
+            'sender_id' => env('AT_SENDER_ID'),
+            'sandbox' => (bool) env('AT_SANDBOX', false),
+        ],
     ],
 
     /*
@@ -146,6 +240,13 @@ return [
         'arrival_radius_metres' => (float) env('ARRIVAL_RADIUS_M', 150),
 
         /*
+         * Assumed town speed, used only for the rough "6 min away" on the
+         * tracking screen. A real estimate needs the Directions API; this is a
+         * straight line and is labelled as approximate.
+         */
+        'average_speed_kmh' => (float) env('AVERAGE_SPEED_KMH', 25),
+
+        /*
          * A reported position is only trusted this long. Past it, a passenger's
          * stated pickup point is the better guess than a stale GPS fix.
          */
@@ -162,8 +263,7 @@ return [
          * How long after its departure time a trip stays in search results.
          *
          * The search design shows an "On the way" state, so a trip that has
-         * just set off but still has a free seat has to remain findable —
-         * someone standing at the stage can still catch it. Past this window it
+         * just set off but still has a free seat has to remain findable - * someone standing at the stage can still catch it. Past this window it
          * drops out, because the car is genuinely gone.
          */
         'departure_grace_minutes' => (int) env('TRIP_DEPARTURE_GRACE_MINUTES', 30),
@@ -193,7 +293,7 @@ return [
     |
     | Identity documents and selfies go to a PRIVATE disk. They are proof of
     | who somebody is, and a public URL for them would be a data breach waiting
-    | to happen — no guessing, no hotlinking, no accidental indexing.
+    | to happen - no guessing, no hotlinking, no accidental indexing.
     |
     | Vehicle photos go to the public disk: they appear on trip cards, and a
     | photo of a car outside is not sensitive.

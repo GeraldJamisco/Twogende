@@ -50,7 +50,7 @@ class DriverVerificationTest extends TestCase
         ], $overrides);
     }
 
-    // Step 1 — identity
+    // Step 1 - identity
 
     public function test_identity_documents_can_be_submitted_for_review(): void
     {
@@ -143,7 +143,7 @@ class DriverVerificationTest extends TestCase
             ->assertJsonPath('data.status', 'pending');
     }
 
-    // Step 2 — vehicle
+    // Step 2 - vehicle
 
     public function test_a_vehicle_can_be_added(): void
     {

@@ -1,4 +1,4 @@
-import { ArrowLeft, ShieldCheck, Star } from 'lucide-react-native';
+import { ArrowLeft, ShieldCheck, Star } from "../../src/icons";
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {

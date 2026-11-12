@@ -53,6 +53,15 @@ class UserResource extends JsonResource
                 'trips_as_passenger' => $this->trips_as_passenger,
             ],
 
+            /*
+             * The settings screen's two switches. Ride updates are the
+             * messages a booking is useless without; marketing is opt-in.
+             */
+            'notifications' => [
+                'ride_updates' => (bool) $this->notify_ride_updates,
+                'marketing' => (bool) $this->notify_marketing,
+            ],
+
             'joined_at' => $this->created_at?->toIso8601String(),
         ];
     }

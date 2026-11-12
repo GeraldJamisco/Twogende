@@ -2,7 +2,7 @@ import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
-import { CalendarDays, ChevronLeft, ShieldCheck } from "lucide-react-native";
+import { CalendarDays, ChevronLeft, ShieldCheck } from "../src/icons";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -57,7 +57,7 @@ export default function Verification() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Step 1 — identity
+  // Step 1 - identity
   const [fullName, setFullName] = useState("");
   const [dob, setDob] = useState("");
   const [idType, setIdType] = useState<IdType>("license");
@@ -66,7 +66,7 @@ export default function Verification() {
   const [selfie, setSelfie] = useState<string | null>(null);
   const [showDobPicker, setShowDobPicker] = useState(false);
 
-  // Step 2 — vehicle
+  // Step 2 - vehicle
   const [makeAndModel, setMakeAndModel] = useState("");
   const [colour, setColour] = useState("");
   const [plate, setPlate] = useState("");
@@ -115,7 +115,7 @@ export default function Verification() {
         });
         setStep(2);
       } catch (e) {
-        // A submission already under review is fine — carry on to the vehicle.
+        // A submission already under review is fine - carry on to the vehicle.
         if ((e as { status?: number }).status === 409) {
           setStep(2);
         } else {
@@ -186,7 +186,7 @@ export default function Verification() {
               <>
                 <Text style={styles.heading}>Confirm your identity</Text>
                 <Text style={styles.blurb}>
-                  This stays private — passengers only ever see that you&apos;re
+                  This stays private - passengers only ever see that you&apos;re
                   verified.
                 </Text>
 
@@ -358,7 +358,7 @@ export default function Verification() {
                   />
                   <Text style={styles.trustText}>
                     Passengers only see your first name, photo, rating,
-                    verification badges and vehicle — never your ID, license or
+                    verification badges and vehicle - never your ID, license or
                     plate number.
                   </Text>
                 </View>
@@ -386,7 +386,7 @@ function eighteenYearsAgo(): Date {
   return date;
 }
 
-/** "18 March 1994" — clearer than a bare YYYY-MM-DD on a form. */
+/** "18 March 1994" - clearer than a bare YYYY-MM-DD on a form. */
 function formatLongDate(iso: string): string {
   return new Date(iso).toLocaleDateString([], {
     day: "numeric",

@@ -1,5 +1,5 @@
 import { router, useFocusEffect } from "expo-router";
-import { MessageCircle } from "lucide-react-native";
+import { MessageCircle } from "../../src/icons";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -22,7 +22,7 @@ import { colors, fonts, inkTints } from "../../src/theme";
 /**
  * The Chats tab.
  *
- * No mockup for this one — built from the established patterns so it doesn't
+ * No mockup for this one - built from the established patterns so it doesn't
  * introduce a new visual language: the uppercase section labels come from the
  * ride-management screen, the row shape from its confirmed-passenger list, and
  * the empty state from Home and Trips.

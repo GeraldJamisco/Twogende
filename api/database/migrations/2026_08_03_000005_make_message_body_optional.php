@@ -10,8 +10,7 @@ return new class extends Migration
      * A photo or a dropped pin doesn't need words with it.
      *
      * `body` was required when every message was typed. Now it's the caption
-     * on an image and the place name on a location, and both are optional —
-     * the attachment is the message.
+     * on an image and the place name on a location, and both are optional - * the attachment is the message.
      */
     public function up(): void
     {

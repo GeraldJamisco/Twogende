@@ -1,5 +1,5 @@
-import { ShieldCheck } from "lucide-react-native";
-import { router } from "expo-router";
+import { ShieldCheck } from "../../src/icons";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
   Image,
@@ -30,8 +30,15 @@ import { colors, fonts, inkTints } from "../../src/theme";
  * on device that's the real OS status bar, so it becomes a safe-area inset.
  */
 export default function Register() {
+  /*
+   * Arrives filled in when sign-in sent somebody here after not recognising
+   * their number - they have already typed it once and confirmed it, so
+   * asking again would be asking twice. Empty when they came here directly.
+   */
+  const { phone: prefill } = useLocalSearchParams<{ phone?: string }>();
+
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(prefill ?? "");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<ApiError | NetworkError | null>(null);
 
@@ -53,7 +60,13 @@ export default function Register() {
       // code is verified, so there's nothing to attach it to before then.
       router.push({
         pathname: "/(auth)/verify",
-        params: { phone: result.phone, name: name.trim() },
+        // No `returning` flag: this person is signing up, so the code screen
+        // greets them as new rather than welcoming them back.
+        params: {
+          phone: result.phone,
+          name: name.trim(),
+          channel: result.channel,
+        },
       });
     } catch (e) {
       setError(e as ApiError | NetworkError);

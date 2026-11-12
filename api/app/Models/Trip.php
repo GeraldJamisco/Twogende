@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\BookingStatus;
+use App\Enums\MessageKind;
+use App\Enums\TripCancellationReason;
 use App\Enums\TripStatus;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -37,7 +39,9 @@ class Trip extends Model
     protected function casts(): array
     {
         return [
+            'cancellation_reason_code' => TripCancellationReason::class,
             'departure_at' => 'datetime',
+            'started_at' => 'datetime',
             'completed_at' => 'datetime',
             'cancelled_at' => 'datetime',
             'status' => TripStatus::class,
@@ -83,7 +87,7 @@ class Trip extends Model
         $query->whereIn('status', [TripStatus::Scheduled, TripStatus::InProgress])
             ->where('seats_available', '>', 0)
             // A trip that has just set off but still has a seat stays findable
-            // for a short grace period — that's the "On the way" state on the
+            // for a short grace period - that's the "On the way" state on the
             // search screen. Past it, the car is genuinely gone.
             ->where('departure_at', '>', now()->subMinutes((int) config('twogende.trips.departure_grace_minutes')));
     }
@@ -238,9 +242,25 @@ class Trip extends Model
      * leaving a booking "accepted" against a dead trip would have passengers
      * turning up for a car that isn't coming.
      */
-    public function cancel(?string $reason = null): void
+    /**
+     * Call the ride off.
+     *
+     * Everyone riding on it is cancelled in the same transaction - a trip that
+     * is gone while its bookings still say "confirmed" would leave passengers
+     * standing at a stage waiting for a car that is never coming.
+     *
+     * They are also *told*, in the conversation they already have open. Push
+     * notifications don't exist yet, so the chat is the only channel that
+     * actually reaches somebody, and a cancellation nobody hears about is the
+     * worst thing this app could do to a person.
+     */
+    public function cancel(?TripCancellationReason $reason = null, ?string $note = null): void
     {
-        DB::transaction(function () use ($reason) {
+        DB::transaction(function () use ($reason, $note) {
+            $affected = $this->bookings()
+                ->whereIn('status', [BookingStatus::Pending, BookingStatus::Accepted])
+                ->get();
+
             $this->bookings()
                 ->whereIn('status', [BookingStatus::Pending, BookingStatus::Accepted])
                 ->update([
@@ -252,9 +272,39 @@ class Trip extends Model
             $this->forceFill([
                 'status' => TripStatus::Cancelled,
                 'cancelled_at' => now(),
-                'cancellation_reason' => $reason,
+                'cancellation_reason_code' => $reason?->value,
+                'cancellation_note' => $note,
             ])->save();
+
+            foreach ($affected as $booking) {
+                $this->notifyOfCancellation($booking, $reason);
+            }
         });
+    }
+
+    /**
+     * The notice in the conversation.
+     *
+     * Written as a system message so it reads as Twogende speaking, not as
+     * something the driver typed - and so it survives the chat window closing,
+     * which a person's message would not be able to do.
+     */
+    private function notifyOfCancellation(Booking $booking, ?TripCancellationReason $reason): void
+    {
+        $because = $reason?->passengerNotice() ?? 'the driver can no longer make the journey';
+
+        $message = new Message([
+            'body' => sprintf(
+                'This ride to %s has been cancelled because %s. Your seat has been released - you can search for another ride now.',
+                $this->destination_name,
+                $because,
+            ),
+        ]);
+
+        $message->booking_id = $booking->getKey();
+        $message->kind = MessageKind::System;
+        $message->sender_id = null;
+        $message->save();
     }
 
     /**
@@ -276,6 +326,11 @@ class Trip extends Model
                 $booking->forceFill([
                     'status' => BookingStatus::Completed,
                     'completed_at' => now(),
+
+                    // Fixed here, at the one moment the ride is done, so a
+                    // later change to the rate can't rewrite what a driver
+                    // was told they earned.
+                    'service_fee' => $booking->calculateServiceFee(),
                 ])->save();
 
                 User::query()->whereKey($booking->passenger_id)->increment('trips_as_passenger');

@@ -1,4 +1,4 @@
-import { Calendar, Search } from 'lucide-react-native';
+import { Calendar, Search } from "../icons";
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { colors, fonts, gutter, inkTints } from '../theme';

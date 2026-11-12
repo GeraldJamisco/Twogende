@@ -10,7 +10,7 @@ return new class extends Migration
      * Live location, so "your driver is here" can be a real event.
      *
      * PRIVACY, deliberately: only the *latest* point is kept, per trip and per
-     * booking — there is no location history table and no trail to subpoena or
+     * booking - there is no location history table and no trail to subpoena or
      * leak. Raw coordinates never reach the other party either; all anyone
      * sees is the message that gets generated when the two are close enough.
      * Clearing the columns when a trip ends is the whole of "stop tracking".

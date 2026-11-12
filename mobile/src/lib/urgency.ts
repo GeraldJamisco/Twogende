@@ -23,7 +23,7 @@ export function urgencyFor(trip: Trip, now: Date = new Date()): Urgency {
   const minutes = Math.round((departure - now.getTime()) / 60_000);
 
   // A trip the driver has started, or one whose time has passed but is still
-  // inside the API's grace window — either way the car is already moving.
+  // inside the API's grace window - either way the car is already moving.
   if (trip.status === "in_progress" || minutes <= 0) {
     return { label: "On the way", tone: "underway" };
   }
@@ -38,7 +38,7 @@ export function urgencyFor(trip: Trip, now: Date = new Date()): Urgency {
 
   const hours = Math.floor(minutes / 60);
 
-  // Beyond a day, hours stop meaning anything — "In 37h" is worse than "In 2d".
+  // Beyond a day, hours stop meaning anything - "In 37h" is worse than "In 2d".
   if (hours >= 24) {
     const days = Math.round(hours / 24);
     return { label: `In ${days}d`, tone: "later" };

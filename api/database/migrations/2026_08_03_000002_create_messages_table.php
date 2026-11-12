@@ -23,7 +23,7 @@ return new class extends Migration
 
             $table->text('body');
 
-            // Null until the other party has seen it — drives the unread count
+            // Null until the other party has seen it - drives the unread count
             // on the Chats tab.
             $table->timestamp('read_at')->nullable();
 

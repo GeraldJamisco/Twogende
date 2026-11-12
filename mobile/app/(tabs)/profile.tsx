@@ -1,5 +1,11 @@
 import { router } from "expo-router";
-import { ShieldAlert, ShieldCheck, Star } from "lucide-react-native";
+import {
+  ChevronRight,
+  Settings,
+  ShieldAlert,
+  ShieldCheck,
+  Star,
+} from "../../src/icons";
 import { useCallback, useEffect, useState } from "react";
 import {
   Image,
@@ -12,7 +18,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { formatRating, formatTripCount } from "../../src/lib/format";
+import {
+  formatInternational,
+  formatRating,
+  formatTripCount,
+} from "../../src/lib/format";
 import { useAuth } from "../../src/state/AuthContext";
 import { colors, fonts, inkTints } from "../../src/theme";
 
@@ -195,6 +205,17 @@ export default function Profile() {
             </View>
           </View>
 
+          {/* Above Sign out, as the design places it. */}
+          <Pressable
+            onPress={() => router.push("/settings")}
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.settingsRow, pressed && styles.pressed]}
+          >
+            <Settings size={19} color={colors.ink} strokeWidth={2} />
+            <Text style={styles.settingsLabel}>Settings</Text>
+            <ChevronRight size={16} color="rgba(43,32,24,0.35)" strokeWidth={2.4} />
+          </Pressable>
+
           <Pressable
             onPress={async () => {
               await signOut();
@@ -216,14 +237,6 @@ function reputationLabel(rating: number | null, trips: number): string {
   return `${formatRating(rating)} · ${formatTripCount(trips)}`;
 }
 
-/** "+256 785 604 703", as the design writes it. */
-function formatInternational(e164: string): string {
-  const digits = e164.replace(/\D/g, "");
-  if (digits.length !== 12) return e164;
-
-  return `+${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6, 9)} ${digits.slice(9)}`;
-}
-
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.cream },
   flex: { flex: 1 },
@@ -234,7 +247,7 @@ const styles = StyleSheet.create({
   avatarFallback: {
     // The design fills this with a 160deg ochre→terra gradient. React Native
     // has no gradient without another native module, so this is the midpoint
-    // of that ramp — see the handover note.
+    // of that ramp - see the handover note.
     backgroundColor: "#c8763a",
     alignItems: "center",
     justifyContent: "center",
@@ -333,6 +346,23 @@ const styles = StyleSheet.create({
   verified: { color: colors.acaciaDark },
   rule: { height: 1, backgroundColor: colors.divider, marginVertical: 14 },
 
+  settingsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 11,
+    borderWidth: 1,
+    borderColor: colors.divider,
+    backgroundColor: colors.surface,
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 12,
+  },
+  settingsLabel: {
+    flex: 1,
+    fontFamily: fonts.body.extraBold,
+    fontSize: 15.5,
+    color: colors.ink,
+  },
   signOut: {
     borderWidth: 1,
     borderColor: colors.divider,

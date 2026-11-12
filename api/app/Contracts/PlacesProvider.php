@@ -29,7 +29,7 @@ interface PlacesProvider
     public function details(string $placeId, ?string $sessionToken = null): ?Place;
 
     /**
-     * The nearest named place to a coordinate — what "My current location"
+     * The nearest named place to a coordinate - what "My current location"
      * resolves to.
      *
      * A raw latitude and longitude can't be matched against a trip by

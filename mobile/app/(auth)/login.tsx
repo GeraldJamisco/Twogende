@@ -21,21 +21,30 @@ import {
 import { colors, fonts, inkTints } from "../../src/theme";
 
 /**
- * Sign in. The number is looked up first so a returning user can be greeted by
- * name, and so an unrecognised number gets a chance to be corrected before
- * anyone pays to send an SMS to it.
+ * Sign in.
+ *
+ * The number is looked up first, but what happens next depends on the answer.
+ *
+ * A number we recognise goes straight through to the code screen - one tap,
+ * one spinner. Stopping to tell somebody their own phone number and asking
+ * them to press a second button is a step that answers no question they had.
+ *
+ * A number we *don't* recognise stops, because there the confirmation earns
+ * its place: a mistyped digit is the likeliest explanation, and the cost of
+ * being wrong is an SMS sent to a stranger.
  */
 export default function Login() {
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | NetworkError | null>(null);
 
-  /** Set once the number has been checked; drives the confirmation step. */
-  const [checked, setChecked] = useState<{
+  /**
+   * Set only when the lookup found no account. A recognised number never
+   * lands here - it has already navigated away.
+   */
+  const [unknown, setUnknown] = useState<{
     phone: string;
     display: string;
-    exists: boolean;
-    greetingName: string | null;
   } | null>(null);
 
   const ready = phoneDigitCount(phone) >= 9;
@@ -46,12 +55,18 @@ export default function Login() {
 
     try {
       const result = await lookupAccount(toE164(phone));
-      setChecked({
-        phone: result.phone,
-        display: result.phone_display,
-        exists: result.exists,
-        greetingName: result.greeting_name,
-      });
+
+      if (!result.exists) {
+        setUnknown({ phone: result.phone, display: result.phone_display });
+        return;
+      }
+
+      /*
+       * Recognised. Send the code and go, without rendering anything in
+       * between - `busy` stays true across both requests so this reads as one
+       * wait rather than two, and the confirmation step never flashes up.
+       */
+      await sendCode(result.phone, result.greeting_name, true);
     } catch (e) {
       setError(e as ApiError | NetworkError);
     } finally {
@@ -59,28 +74,51 @@ export default function Login() {
     }
   }
 
-  /** Sends the code, for a recognised number or a confirmed new one. */
-  async function sendCode() {
-    if (!checked) return;
-    setBusy(true);
-    setError(null);
+  /** Sends the code and moves to the code screen. */
+  async function sendCode(
+    to: string,
+    greetingName: string | null,
+    returning: boolean,
+  ) {
+    const result = await requestOtp(to);
 
-    try {
-      const result = await requestOtp(checked.phone);
-      router.push({
-        pathname: "/(auth)/verify",
-        params: {
-          phone: result.phone,
-          channel: result.channel,
-          greetingName: checked.greetingName ?? "",
-          isNew: checked.exists ? "" : "1",
-        },
-      });
-    } catch (e) {
-      setError(e as ApiError | NetworkError);
-    } finally {
-      setBusy(false);
-    }
+    router.push({
+      pathname: "/(auth)/verify",
+      params: {
+        phone: result.phone,
+        channel: result.channel,
+        greetingName: greetingName ?? "",
+
+        /*
+         * Whether we recognised this number, sent separately from the name.
+         * Plenty of real accounts have never been named - the code screen
+         * still owes those people a "Welcome back", and an empty
+         * greetingName on its own can't tell them apart from a stranger.
+         */
+        returning: returning ? "1" : "",
+      },
+    });
+  }
+
+  /**
+   * The unknown-number path: they have confirmed the digits are right, so
+   * hand them to sign-up.
+   *
+   * It deliberately does *not* send a code from here. Verifying a code is
+   * what creates the account, so sending one now would create a nameless
+   * user and drop them on the home screen with no way back to a name field.
+   * Sign-up asks for a name first and sends the code itself.
+   *
+   * The digits travel as typed - PhoneInput's value is national digits with
+   * no country code, so the field arrives filled in and correct.
+   */
+  function createAccount() {
+    if (!unknown) return;
+
+    router.push({
+      pathname: "/(auth)/register",
+      params: { phone: phone.replace(/\D/g, "") },
+    });
   }
 
   return (
@@ -93,18 +131,17 @@ export default function Login() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.heading}>
-            {checked?.exists
-              ? `Welcome back${checked.greetingName ? `, ${checked.greetingName}` : ""}`
-              : "Welcome back"}
-          </Text>
+          {/*
+            The greeting by name now happens on the code screen, which is where
+            a recognised number goes straight to. Nothing recognised is ever
+            rendered here any more.
+          */}
+          <Text style={styles.heading}>Welcome back</Text>
 
           <Text style={styles.subheading}>
-            {checked === null
+            {unknown === null
               ? "Enter your number and we'll send you a code."
-              : checked.exists
-                ? `We'll send a code to ${checked.display} via WhatsApp or SMS.`
-                : `We couldn't find a Twogende account for ${checked.display}.`}
+              : `We couldn't find a Twogende account for ${unknown.display}.`}
           </Text>
 
           {error ? (
@@ -118,7 +155,7 @@ export default function Login() {
             onChangeText={(next) => {
               setPhone(next);
               // Any edit invalidates the previous check.
-              setChecked(null);
+              setUnknown(null);
             }}
             hint="Ugandan mobile number"
             error={
@@ -126,40 +163,38 @@ export default function Login() {
             }
           />
 
-          {checked === null ? (
+          {unknown === null ? (
             <Button
               label="Continue"
               onPress={check}
               loading={busy}
               disabled={!ready}
             />
-          ) : checked.exists ? (
-            <Button label="Send me a code" onPress={sendCode} loading={busy} />
           ) : (
             <>
               {/*
                 No account. Confirm the number is right before spending an SMS
-                on it — a mistyped digit is the likeliest explanation.
+                on it - a mistyped digit is the likeliest explanation.
               */}
               <View style={styles.confirm}>
                 <Text style={styles.confirmTitle}>
                   Create a new account for this number?
                 </Text>
                 <Text style={styles.confirmBody}>
-                  Check that {checked.display} is correct. We'll send a code to
+                  Check that {unknown.display} is correct. We'll send a code to
                   confirm it's yours.
                 </Text>
               </View>
 
               <Button
                 label="Yes, create my account"
-                onPress={sendCode}
+                onPress={createAccount}
                 loading={busy}
               />
               <Button
                 label="Change the number"
                 variant="quiet"
-                onPress={() => setChecked(null)}
+                onPress={() => setUnknown(null)}
               />
             </>
           )}

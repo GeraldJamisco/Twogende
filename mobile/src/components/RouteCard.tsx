@@ -1,4 +1,4 @@
-import { LocateFixed, MapPin, X } from "lucide-react-native";
+import { LocateFixed, MapPin, X } from "../icons";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -31,7 +31,7 @@ type ActiveField = "origin" | "destination" | null;
  * The two-row route card from "Twogende Search.dc.html".
  *
  * The design draws plain text inputs, but a typed place name can't be matched
- * against a trip — two people writing "Ntinda" have to resolve to the same
+ * against a trip - two people writing "Ntinda" have to resolve to the same
  * Google place. So typing here searches, and the value that leaves is always
  * something picked from the list.
  */
@@ -109,8 +109,7 @@ export function RouteCard({
   /**
    * "My current location", which the design shows as the default origin.
    *
-   * Permission is asked for on the tap rather than when the screen opens —
-   * a prompt nobody triggered is a prompt people refuse.
+   * Permission is asked for on the tap rather than when the screen opens - * a prompt nobody triggered is a prompt people refuse.
    */
   async function useCurrentLocation() {
     if (!token || !active) return;
@@ -223,7 +222,7 @@ export function RouteCard({
       {searching ? <ActivityIndicator style={styles.spinner} color={colors.terra} /> : null}
 
       {/*
-        Offered while a field is open and empty — the design's default origin
+        Offered while a field is open and empty - the design's default origin
         was "My current location", and this is how you get there.
       */}
       {active && text.trim().length < 2 ? (

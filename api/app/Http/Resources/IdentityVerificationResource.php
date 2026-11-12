@@ -10,7 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * Status of an identity submission, for the person who made it.
  *
  * Carries no document number, no date of birth and no image paths. The app
- * only needs to know where the submission stands — everything else is for the
+ * only needs to know where the submission stands - everything else is for the
  * reviewer, and every field left out is one that can't leak.
  *
  * @mixin IdentityVerification

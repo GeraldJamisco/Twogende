@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
+use App\Contracts\MobileMoneyGateway;
 use App\Contracts\PlacesProvider;
 use App\Contracts\SmsSender;
 use App\Services\Messaging\ChannelRouter;
 use App\Services\Messaging\SmsChannel;
+use App\Services\Payments\UnavailableGateway;
 use App\Services\Places\GooglePlacesProvider;
+use App\Services\Sms\AfricasTalkingSmsSender;
 use App\Services\Sms\DevSmsSender;
 use App\Services\Sms\LogSmsSender;
 use App\Support\PhoneNumber;
@@ -37,11 +40,25 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
+        /*
+         * No aggregator is connected, so this reports every provider
+         * unavailable and the payment screen offers cash only. A real gateway
+         * registers here and nothing above the contract has to change.
+         */
+        $this->app->bind(MobileMoneyGateway::class, function () {
+            return match (config('twogende.payments.gateway')) {
+                default => new UnavailableGateway,
+            };
+        });
+
         $this->app->bind(SmsSender::class, function () {
             return match (config('twogende.sms.driver')) {
+                // The one that reaches an actual handset.
+                'africastalking' => new AfricasTalkingSmsSender,
                 // Logs *and* keeps an outbox the dev console can read.
                 'dev' => new DevSmsSender,
-                // Real gateways register here as they're added.
+                // Anything unrecognised logs rather than silently costing
+                // money against a half-configured gateway.
                 default => new LogSmsSender,
             };
         });

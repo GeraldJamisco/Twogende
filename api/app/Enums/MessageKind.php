@@ -7,7 +7,7 @@ enum MessageKind: string
     /** Typed by one of the two people. */
     case User = 'user';
 
-    /** Written by Twogende — arrival notices and the like. */
+    /** Written by Twogende - arrival notices and the like. */
     case System = 'system';
 
     /** A dropped pin. */

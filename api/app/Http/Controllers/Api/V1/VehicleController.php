@@ -24,7 +24,7 @@ class VehicleController extends Controller
     /**
      * Step 2 of driver verification: add the car.
      *
-     * The car photo goes to the public disk — it appears on trip cards, and a
+     * The car photo goes to the public disk - it appears on trip cards, and a
      * picture of a car outside isn't sensitive. The plate is a different
      * matter: only the last four characters are stored from the driver, and
      * the full plate is read off this photo during review.

@@ -13,7 +13,7 @@ use App\Support\Distance;
  * Works out when a driver has reached a passenger, and says so.
  *
  * Called whenever a driver reports their position. For each confirmed
- * passenger it measures against the best position it has — their live one if
+ * passenger it measures against the best position it has - their live one if
  * they're sharing it and it's fresh, otherwise the pickup point they gave, and
  * failing that the trip's origin.
  *
@@ -68,8 +68,7 @@ class ArrivalDetector
     /**
      * Where this passenger is expected to be standing.
      *
-     * A live position beats a stated pickup point, but only while it's fresh —
-     * an hour-old fix is worse than the place they said they'd wait.
+     * A live position beats a stated pickup point, but only while it's fresh - * an hour-old fix is worse than the place they said they'd wait.
      *
      * @return array{latitude: float, longitude: float}|null
      */
@@ -109,7 +108,7 @@ class ArrivalDetector
      * The "Twogende" notice in the conversation.
      *
      * Written as a system message so it renders as a notice card rather than
-     * appearing to come from the driver — nobody should think their driver
+     * appearing to come from the driver - nobody should think their driver
      * typed this.
      */
     private function announce(Booking $booking, Trip $trip): void

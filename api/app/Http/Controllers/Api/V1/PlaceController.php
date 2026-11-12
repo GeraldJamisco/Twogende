@@ -39,7 +39,7 @@ class PlaceController extends Controller
     }
 
     /**
-     * Turn a GPS fix into a named place — what "My current location" resolves
+     * Turn a GPS fix into a named place - what "My current location" resolves
      * to on the search screen.
      *
      * A bare coordinate can't be matched against a trip by identifier, so the

@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { Check, MessageCircle } from "lucide-react-native";
+import { Check, MessageCircle } from "../../src/icons";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

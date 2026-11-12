@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\RatedRole;
 use App\Models\User;
+use App\Support\RatingTags;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -21,6 +23,20 @@ use Illuminate\Support\Str;
 class PublicUserResource extends JsonResource
 {
     /**
+     * Tag highlights cost a query per person, so they are off by default a
+     * search result showing twelve drivers must not run twelve tallies. Only
+     * a screen that renders one profile turns them on.
+     */
+    private bool $withHighlights = false;
+
+    public function withHighlights(): static
+    {
+        $this->withHighlights = true;
+
+        return $this;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -30,7 +46,7 @@ class PublicUserResource extends JsonResource
             'name' => $this->name,
 
             /*
-             * The one word used to identify somebody in the app — greetings,
+             * The one word used to identify somebody in the app - greetings,
              * chat headers, "David will confirm your seat shortly". Resolved
              * here so no client ever splits a name itself and gets it wrong.
              */
@@ -53,6 +69,18 @@ class PublicUserResource extends JsonResource
                 'trips_as_driver' => $this->trips_as_driver,
                 'trips_as_passenger' => $this->trips_as_passenger,
             ],
+
+            /*
+             * What people actually say, as a percentage per category
+             * "Smooth driving 96%". Absent rather than empty when a person
+             * hasn't been rated enough for any of it to mean anything.
+             */
+            $this->mergeWhen($this->withHighlights, fn () => [
+                'highlights' => [
+                    'as_driver' => RatingTags::highlightsFor($this->resource, RatedRole::Driver),
+                    'as_passenger' => RatingTags::highlightsFor($this->resource, RatedRole::Passenger),
+                ],
+            ]),
 
             'joined_at' => $this->created_at?->toIso8601String(),
         ];

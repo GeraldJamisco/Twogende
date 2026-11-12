@@ -10,7 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * A booking as either side sees it.
  *
  * The passenger goes out through PublicUserResource, so a driver reviewing
- * requests sees a name, photo and rating — never a phone number. Contact
+ * requests sees a name, photo and rating - never a phone number. Contact
  * details are released separately, and only once the request is accepted.
  *
  * @mixin Booking
@@ -48,8 +48,7 @@ class BookingResource extends JsonResource
 
             /*
              * Where along the route this passenger joins. Null means they
-             * didn't say, in which case they're joining at the trip's origin —
-             * the app substitutes that rather than showing a blank.
+             * didn't say, in which case they're joining at the trip's origin - * the app substitutes that rather than showing a blank.
              */
             'pickup' => [
                 'name' => $this->pickup_name,
@@ -80,6 +79,15 @@ class BookingResource extends JsonResource
             'chat' => [
                 'closes_at' => $this->chatClosesAt()?->toIso8601String(),
                 'open' => $this->chatIsOpen(),
+            ],
+
+            /*
+             * Drives the tracking screen's four steps and the bar on the home
+             * screen. Both derived, so they can't drift from the trip.
+             */
+            'tracking' => [
+                'stage' => $this->trackingStage(),
+                'minutes_away' => $this->minutesAway(),
             ],
 
             'status' => $this->status->value,

@@ -11,7 +11,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * Requesting a seat, and the driver answering — the flow behind
+ * Requesting a seat, and the driver answering - the flow behind
  * "Twogende Ride Posted.dc.html".
  */
 class BookingTest extends TestCase

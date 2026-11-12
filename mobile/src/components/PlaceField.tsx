@@ -1,4 +1,4 @@
-import { MapPin, X } from "lucide-react-native";
+import { MapPin, X } from "../icons";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,

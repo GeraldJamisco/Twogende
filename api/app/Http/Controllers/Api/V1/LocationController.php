@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
  * passenger their driver has arrived.
  *
  * Nothing here is readable. There is no endpoint that returns anybody's
- * coordinates — the only thing that comes back out is the system message the
+ * coordinates - the only thing that comes back out is the system message the
  * proximity check generates. Positions are overwritten, never accumulated.
  */
 class LocationController extends Controller
@@ -56,7 +56,7 @@ class LocationController extends Controller
     }
 
     /**
-     * A passenger sharing where they're waiting. Optional — without it the
+     * A passenger sharing where they're waiting. Optional - without it the
      * pickup point they gave is used instead.
      */
     public function passenger(Request $request, Booking $booking): JsonResponse

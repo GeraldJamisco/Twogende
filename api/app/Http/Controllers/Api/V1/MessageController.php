@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 /**
  * Messages between a passenger and their driver.
  *
- * A booking is the conversation — you can only message somebody because one of
+ * A booking is the conversation - you can only message somebody because one of
  * you asked for a seat on the other's trip. That means BookingPolicy::view()
  * already answers "may these two people talk", and there's no second set of
  * permissions to keep in step.
@@ -57,7 +57,7 @@ class MessageController extends Controller
     /**
      * The thread on one booking, oldest first.
      *
-     * Reading it marks the other side's messages as read — opening a
+     * Reading it marks the other side's messages as read - opening a
      * conversation is the only sensible definition of having seen it.
      */
     public function index(Request $request, Booking $booking): AnonymousResourceCollection
@@ -77,7 +77,7 @@ class MessageController extends Controller
     /**
      * Streams a chat photo to whichever of the two people asked for it.
      *
-     * These never get a public URL — the same rule that decides who may read
+     * These never get a public URL - the same rule that decides who may read
      * the conversation decides who may see its pictures.
      */
     public function image(Request $request, Message $message): StreamedResponse

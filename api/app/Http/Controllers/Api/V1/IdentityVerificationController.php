@@ -26,7 +26,7 @@ class IdentityVerificationController extends Controller
     /**
      * Submit identity documents for review.
      *
-     * Files go to a private disk. These are ID documents and a face — a public
+     * Files go to a private disk. These are ID documents and a face - a public
      * URL for them would be a breach waiting to be found, so nothing here is
      * ever web-addressable and the paths never leave the server.
      */

@@ -37,7 +37,7 @@ export const inkTints = {
   timestamp: "rgba(43,32,24,0.45)",
   /** The small uppercase wordmark beside the brand mark. */
   brand: "rgba(43,32,24,0.42)",
-  /** An unmet verification state on the profile — "Not yet". */
+  /** An unmet verification state on the profile - "Not yet". */
   notYet: "rgba(43,32,24,0.40)",
   /** Placeholder text inside an input. Lighter than a label. */
   inputPlaceholder: "rgba(43,32,24,0.38)",
@@ -65,7 +65,7 @@ export type SeatBadgeTone = keyof typeof seatBadgeTones;
 /**
  * The urgency pill on trip cards, from "Twogende Search Results.dc.html".
  *
- * Only "Leaving now" carries a dot — it's the one state that wants to catch
+ * Only "Leaving now" carries a dot - it's the one state that wants to catch
  * the eye, and giving every pill a dot would defeat that.
  */
 export const urgencyTones = {
@@ -87,7 +87,7 @@ export const urgencyTones = {
     foreground: "#a06f1f",
     dot: false,
   },
-  /** Further out — deliberately the quietest. */
+  /** Further out - deliberately the quietest. */
   later: {
     background: "rgba(43,32,24,0.08)",
     foreground: "rgba(43,32,24,0.55)",

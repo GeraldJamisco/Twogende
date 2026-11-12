@@ -1,5 +1,5 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { House, MessageCircle, Route, User } from 'lucide-react-native';
+import { House, MessageCircle, Route, User } from "../icons";
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,8 +8,8 @@ import { colors, fonts, inkTints } from '../theme';
 /**
  * Route name (the file in app/(tabs)) → icon and label.
  *
- * Search is deliberately absent. It's still a route — reached from the home
- * screen's "Find a ride" tile and its search pill — but it no longer holds a
+ * Search is deliberately absent. It's still a route - reached from the home
+ * screen's "Find a ride" tile and its search pill - but it no longer holds a
  * place in the bar. Anything not listed here renders nothing, so a hidden tab
  * needs no special handling.
  */

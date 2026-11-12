@@ -67,7 +67,15 @@ export default function Trips() {
             // Object form rather than a template string: it's the documented
             // way to push a dynamic route and doesn't rely on the generated
             // interpolated type being present.
-            onPress={(trip) => router.push({ pathname: "/ride/[id]", params: { id: trip.id } })}
+            // A finished trip has nothing left to manage - it goes to its
+            // summary. Anything still live goes to the ride screen.
+            onPress={(trip) =>
+              router.push(
+                trip.status === "completed"
+                  ? { pathname: "/earnings/[id]", params: { id: trip.id } }
+                  : { pathname: "/ride/[id]", params: { id: trip.id } },
+              )
+            }
           />
         )}
         ListEmptyComponent={

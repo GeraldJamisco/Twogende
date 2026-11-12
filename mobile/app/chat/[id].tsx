@@ -8,7 +8,7 @@ import {
   MapPin,
   Phone,
   Sparkles,
-} from "lucide-react-native";
+} from "../../src/icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -47,7 +47,7 @@ import { colors, fonts, inkTints } from "../../src/theme";
 /** The chips under "Smart suggestions", from the design. */
 const QUICK_REPLIES = ["I'm on my way", "I'm here", "5 min away"];
 
-/** Implements "Twogende Chat.dc.html" — the passenger's side. */
+/** Implements "Twogende Chat.dc.html" - the passenger's side. */
 export default function Chat() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { token } = useAuth();
@@ -127,7 +127,7 @@ export default function Chat() {
         accuracy: Location.Accuracy.Balanced,
       });
 
-      // Named if we can name it — "Ntinda stage" beats a pair of numbers.
+      // Named if we can name it - "Ntinda stage" beats a pair of numbers.
       const place = await resolveCurrentPlace(token).catch(() => null);
 
       const { data } = await sendLocation(token, Number(id), {
@@ -209,7 +209,7 @@ export default function Chat() {
         </View>
 
         {/*
-          In-app calling isn't built yet — the button is here as designed but
+          In-app calling isn't built yet - the button is here as designed but
           inert, and it's on the pre-launch list. See LAUNCH-CHECKLIST.md.
         */}
         <Pressable
@@ -253,7 +253,7 @@ export default function Chat() {
           {messages.map((message) =>
             message.kind === "system" ? (
               // Written by Twogende, so it gets the badge rather than a
-              // bubble — nobody should think their driver typed this.
+              // bubble - nobody should think their driver typed this.
               <View key={message.id} style={styles.systemRow}>
                 <View style={styles.systemIcon}>
                   <Link2 size={14} color={colors.onTerra} strokeWidth={2.3} />
@@ -404,7 +404,7 @@ export default function Chat() {
 
           {/*
             Single line with a "send" return key: the design has no send
-            button — location, input, camera — so the keyboard is the only way
+            button - location, input, camera - so the keyboard is the only way
             to post a message. Multiline would swallow the return instead.
           */}
           <TextInput

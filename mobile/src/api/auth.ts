@@ -26,13 +26,13 @@ export type OtpVerifyResult = {
 };
 
 export type AccountLookupResult = {
-  /** Normalised E.164 — send this back on the OTP call. */
+  /** Normalised E.164 - send this back on the OTP call. */
   phone: string;
   /** "0701 234 567", for confirming the number back to the user. */
   phone_display: string;
   exists: boolean;
   /**
-   * One word, for "Welcome back, Grace" — the display name the person chose,
+   * One word, for "Welcome back, Grace" - the display name the person chose,
    * often a nickname. Never their legal name, which is only ever used for
    * identity verification. Null when the account has never been named.
    */

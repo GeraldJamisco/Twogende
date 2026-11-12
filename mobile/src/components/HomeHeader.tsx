@@ -1,4 +1,4 @@
-import { User } from 'lucide-react-native';
+import { User } from "../icons";
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, fonts, gutter, inkTints } from '../theme';

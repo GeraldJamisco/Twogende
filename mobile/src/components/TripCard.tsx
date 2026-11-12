@@ -1,4 +1,4 @@
-import { ShieldCheck, Star } from "lucide-react-native";
+import { ShieldCheck, Star } from "../icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import {
@@ -29,7 +29,7 @@ type Props = {
  * The ride card from "Twogende Search Results.dc.html", used on both the home
  * feed and search results.
  *
- * Departure only — there is no arrival time. A driver can't reliably promise
+ * Departure only - there is no arrival time. A driver can't reliably promise
  * one on Kampala roads, so the design shows when the car leaves and lets the
  * urgency pill carry the rest.
  */

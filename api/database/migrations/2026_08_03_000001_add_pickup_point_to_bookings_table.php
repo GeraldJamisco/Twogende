@@ -10,7 +10,7 @@ return new class extends Migration
      * Where along the route a passenger wants picking up.
      *
      * "Twogende Ride Posted.dc.html" lists each request as "1 seat · Kireka
-     * stage" — three passengers on one Kampala→Jinja trip joining at three
+     * stage" - three passengers on one Kampala→Jinja trip joining at three
      * different points. The driver needs to know where to stop.
      *
      * Nullable: a passenger who doesn't say is assumed to be joining at the

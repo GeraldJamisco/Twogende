@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\BookingStatus;
+use App\Enums\TripCancellationReason;
 use App\Enums\TripStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Trip\SearchTripsRequest;
@@ -13,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 
 class TripController extends Controller
 {
@@ -30,7 +32,7 @@ class TripController extends Controller
             ->with(['driver', 'vehicle'])
             ->withMyBooking($request->user());
 
-        // "Lowest price" still breaks ties by departure — of two equally cheap
+        // "Lowest price" still breaks ties by departure - of two equally cheap
         // rides, the sooner one is the more useful answer.
         match ($request->sort()) {
             'price' => $query->orderBy('contribution_per_seat')->orderBy('departure_at'),
@@ -72,11 +74,11 @@ class TripController extends Controller
     /**
      * What other drivers are asking on this route.
      *
-     * Backs the "Suggested USh 12k–18k" line when posting a ride. Derived from
+     * Backs the "Suggested USh 12k - 18k" line when posting a ride. Derived from
      * real trips rather than a guess: a made-up range would anchor drivers to a
      * number nobody has ever actually paid.
      *
-     * Returns null below a handful of trips — a "suggestion" drawn from one or
+     * Returns null below a handful of trips - a "suggestion" drawn from one or
      * two data points is noise dressed up as guidance, and the screen hides the
      * line rather than show it.
      */
@@ -191,15 +193,31 @@ class TripController extends Controller
      * Cancel a trip. Bookings go with it the seat is gone either way, and
      * leaving them "accepted" against a dead trip would be a lie.
      */
+    /** The reasons the cancel screen offers, so the list lives in one place. */
+    public function cancellationReasons(): JsonResponse
+    {
+        return response()->json(['data' => TripCancellationReason::offered()]);
+    }
+
     public function cancel(Request $request, Trip $trip): TripResource
     {
         $this->authorize('cancel', $trip);
 
         $validated = $request->validate([
-            'reason' => ['nullable', 'string', 'max:255'],
+            // Required: the screen won't let a driver past without choosing
+            // one, and a cancellation with no reason teaches us nothing about
+            // why rides fall through.
+            'reason' => ['required', Rule::enum(TripCancellationReason::class)],
+
+            // Only "Other" opens the box, but a driver who picks a reason and
+            // still wants to explain is not doing anything wrong.
+            'note' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $trip->cancel($validated['reason'] ?? null);
+        $trip->cancel(
+            TripCancellationReason::from($validated['reason']),
+            $validated['note'] ?? null,
+        );
 
         return new TripResource($trip->load(['driver', 'vehicle']));
     }
@@ -249,7 +267,13 @@ class TripController extends Controller
     {
         $this->authorize('complete', $trip); // same window as completing
 
-        $trip->forceFill(['status' => TripStatus::InProgress])->save();
+        $trip->forceFill([
+            'status' => TripStatus::InProgress,
+
+            // Stamped once. Pressing start twice on a flaky connection must
+            // not restart the clock the summary reads from.
+            'started_at' => $trip->started_at ?? now(),
+        ])->save();
 
         return new TripResource($trip->load(['driver', 'vehicle']));
     }

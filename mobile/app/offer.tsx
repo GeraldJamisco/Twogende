@@ -2,7 +2,7 @@ import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
-import { Car, Check, ChevronLeft, Clock, ShieldCheck } from "lucide-react-native";
+import { Car, Check, ChevronLeft, Clock, ShieldCheck } from "../src/icons";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -29,7 +29,7 @@ import type { Vehicle } from "../src/types";
 
 type DateChoice = "today" | "tomorrow" | "pick";
 
-/** Implements "Twogende Offer Ride.dc.html" — the form and posted states. */
+/** Implements "Twogende Offer Ride.dc.html" - the form and posted states. */
 export default function OfferRide() {
   const { token } = useAuth();
 
@@ -53,7 +53,7 @@ export default function OfferRide() {
   const [postedTripId, setPostedTripId] = useState<number | null>(null);
 
   // The design shows the driver's verified car rather than asking them to pick
-  // one — publishing is gated on having exactly that.
+  // one - publishing is gated on having exactly that.
   useEffect(() => {
     if (!token) return;
     void listVehicles(token)
@@ -172,7 +172,7 @@ export default function OfferRide() {
             <SummaryRow label="Route" value={`${origin?.name} → ${destination?.name}`} />
             <SummaryRow
               label="Departs"
-              value={`${dateLabel(dateChoice, pickedDate)} · ${time ? formatClock(time) : "—"}`}
+              value={`${dateLabel(dateChoice, pickedDate)} · ${time ? formatClock(time) : " - "}`}
             />
             <SummaryRow label="Seats offered" value={String(seats)} />
             <View style={styles.summaryTotal}>
@@ -301,7 +301,7 @@ export default function OfferRide() {
             >
               <Clock size={17} color={colors.ochre} strokeWidth={2.2} />
               <Text style={styles.timePrompt}>What time do you leave?</Text>
-              <Text style={styles.timeValue}>{time ? formatClock(time) : "—"}</Text>
+              <Text style={styles.timeValue}>{time ? formatClock(time) : " - "}</Text>
             </Pressable>
 
             {showTimePicker ? (
@@ -352,7 +352,7 @@ export default function OfferRide() {
             <Text style={styles.cardTitle}>Contribution per seat</Text>
             <Text style={styles.cardBlurb}>
               {suggestion
-                ? `Suggested ${formatContribution(suggestion.low)}–${formatContribution(suggestion.high)} for this route`
+                ? `Suggested ${formatContribution(suggestion.low)} - ${formatContribution(suggestion.high)} for this route`
                 : "What each passenger chips in towards fuel"}
             </Text>
 

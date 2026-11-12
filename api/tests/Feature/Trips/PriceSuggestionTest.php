@@ -11,7 +11,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * Backs the "Suggested USh 12k–18k for this route" line when posting a ride. this price will also be upated by the admin  this is just for the design different prices will be updated in the backend
+ * Backs the "Suggested USh 12k - 18k for this route" line when posting a ride. this price will also be upated by the admin  this is just for the design different prices will be updated in the backend
  */
 class PriceSuggestionTest extends TestCase
 {

@@ -31,7 +31,7 @@ export function autocomplete(token: string, query: string, sessionToken: string)
 }
 
 /**
- * Turn a GPS fix into a named place — what "Use my current location" resolves
+ * Turn a GPS fix into a named place - what "Use my current location" resolves
  * to. A bare coordinate can't be matched against a trip by identifier, so the
  * handset's position has to become a real place first.
  */

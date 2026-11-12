@@ -3,6 +3,7 @@
 namespace Tests\Feature\Trips;
 
 use App\Enums\BookingStatus;
+use App\Enums\TripCancellationReason;
 use App\Enums\TripStatus;
 use App\Models\Booking;
 use App\Models\Trip;
@@ -135,7 +136,9 @@ class TripManagementTest extends TestCase
         $this->postJson("/api/v1/trips/{$trip->id}/cancel")->assertForbidden();
 
         Sanctum::actingAs($trip->driver);
-        $this->postJson("/api/v1/trips/{$trip->id}/cancel", ['reason' => 'Car trouble'])->assertOk();
+        $this->postJson("/api/v1/trips/{$trip->id}/cancel", [
+            'reason' => TripCancellationReason::VehicleProblem->value,
+        ])->assertOk();
 
         $this->assertSame(TripStatus::Cancelled, $trip->fresh()->status);
     }
@@ -147,7 +150,9 @@ class TripManagementTest extends TestCase
         $accepted = Booking::factory()->for($trip)->accepted()->create();
 
         Sanctum::actingAs($trip->driver);
-        $this->postJson("/api/v1/trips/{$trip->id}/cancel")->assertOk();
+        $this->postJson("/api/v1/trips/{$trip->id}/cancel", [
+            'reason' => TripCancellationReason::NotEnoughPassengers->value,
+        ])->assertOk();
 
         $this->assertSame(BookingStatus::CancelledByDriver, $pending->fresh()->status);
         $this->assertSame(BookingStatus::CancelledByDriver, $accepted->fresh()->status);

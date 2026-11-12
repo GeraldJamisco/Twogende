@@ -124,14 +124,14 @@ class GooglePlacesProvider implements PlacesProvider
     /**
      * Nearest named place to a GPS fix, via Places Nearby Search.
      *
-     * Cached on a coarse grid — walking a few metres shouldn't cost another
+     * Cached on a coarse grid - walking a few metres shouldn't cost another
      * billed lookup.
      *
      * KNOWN LIMITATION: this answers with a nearby *business* ("African Clean
      * Energy Kampala Office") rather than the neighbourhood somebody would
      * actually name ("Ntinda"). Nearby Search only knows about points of
-     * interest. Search still works — the coordinate radius in
-     * Trip::scopeFromPlace matches regardless of the label — but the label
+     * interest. Search still works - the coordinate radius in
+     * Trip::scopeFromPlace matches regardless of the label - but the label
      * reads oddly.
      *
      * The fix is Google's Geocoding API, whose reverse lookup returns
@@ -200,7 +200,7 @@ class GooglePlacesProvider implements PlacesProvider
      * Choose the most useful of the nearby results to be picked up from.
      *
      * Ranked purely by distance, Google hands back whichever building you're
-     * standing next to — "African Clean Energy Kampala Office" rather than
+     * standing next to - "African Clean Energy Kampala Office" rather than
      * "Ntinda". A driver can't find that, and it won't match anybody else's
      * search. So a stage, a stop or a landmark wins over an office, and the
      * nearest result is only the fallback.

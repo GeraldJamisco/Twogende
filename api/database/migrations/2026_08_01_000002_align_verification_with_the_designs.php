@@ -19,7 +19,7 @@ return new class extends Migration
         Schema::table('vehicles', function (Blueprint $table) {
             /*
              * The design asks the driver for the last four characters of the
-             * plate, not the whole thing — and its own trust note promises
+             * plate, not the whole thing - and its own trust note promises
              * passengers never see the plate number.
              *
              * So the driver supplies the suffix, which is all a passenger needs

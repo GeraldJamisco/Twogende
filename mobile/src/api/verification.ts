@@ -23,7 +23,7 @@ export function listVehicles(token: string) {
 /**
  * Multipart uploads, so these bypass the JSON client.
  *
- * The API is reached over the LAN address in EXPO_PUBLIC_API_URL — see
+ * The API is reached over the LAN address in EXPO_PUBLIC_API_URL - see
  * src/api/client.ts for why "localhost" doesn't work from a handset.
  */
 async function upload<T>(path: string, token: string, form: FormData): Promise<T> {

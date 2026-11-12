@@ -5,7 +5,7 @@ import { colors, fonts, inkTints } from '../../theme';
 
 type Props = Omit<TextInputProps, 'value' | 'onChangeText'> & {
   label?: string;
-  /** National digits only — the +256 is fixed and not part of the value. */
+  /** National digits only - the +256 is fixed and not part of the value. */
   value: string;
   onChangeText: (value: string) => void;
   error?: string;
@@ -20,7 +20,7 @@ const COUNTRY_CODE = '+256';
  *
  * The +256 is displayed, not typed: it can't be deleted, and it isn't part of
  * the value the caller receives. That removes the commonest way people get a
- * number wrong — half-typing a country code on top of a local one.
+ * number wrong - half-typing a country code on top of a local one.
  *
  * Field styling matches the design's inputs exactly (1.5px divider border,
  * 16px radius, surface fill, terracotta on focus).

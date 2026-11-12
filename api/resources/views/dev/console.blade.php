@@ -67,15 +67,15 @@
     <div class="row"><button class="go" onclick="send()">Send</button></div>
 
     <h2 style="margin-top:16px">Response <span id="status"></span></h2>
-    <pre id="response">—</pre>
+    <pre id="response"> - </pre>
   </section>
 
   <section>
     <h2>SMS outbox <button onclick="clearOutbox()" style="float:right">clear</button></h2>
-    <div id="outbox" class="muted">—</div>
+    <div id="outbox" class="muted"> - </div>
 
     <h2 style="margin-top:18px">Database <span id="stamp" class="muted"></span></h2>
-    <div id="state" class="muted">—</div>
+    <div id="state" class="muted"> - </div>
   </section>
 </main>
 
@@ -172,7 +172,7 @@ async function refresh() {
 }
 
 function fmt(v) {
-  if (v === null || v === undefined) return '<span class="muted">—</span>';
+  if (v === null || v === undefined) return '<span class="muted"> - </span>';
   if (v === true) return '<span class="pill ok">yes</span>';
   if (v === false) return '<span class="muted">no</span>';
   return String(v);

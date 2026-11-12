@@ -4,7 +4,7 @@ Peer-to-peer carpooling for Uganda. Someone already driving to Jinja posts the
 trip; someone else going the same way asks for a seat and splits the cost.
 
 It is deliberately **not** a taxi app. There are no professional drivers, no
-dispatch, and no fares — people share a journey they were making anyway.
+dispatch, and no fares - people share a journey they were making anyway.
 
 The starting wedge is daily commuter routes in and around Kampala, with
 intercity travel to follow.
@@ -20,7 +20,7 @@ LAUNCH-CHECKLIST.md   Everything designed or promised but not yet built
 ```
 
 Screens are designed first in Claude Design and translated into Expo. The
-design project is the source of truth for anything visual — see
+design project is the source of truth for anything visual - see
 [Designs](#designs).
 
 ---
@@ -38,7 +38,7 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Create two databases — `twogende` and `twogende_testing` — then:
+Create two databases - `twogende` and `twogende_testing` - then:
 
 ```bash
 php artisan migrate
@@ -66,7 +66,7 @@ Scan the QR code with Expo Go on an Android device.
 ### 3. Signing in
 
 There are no passwords. Enter any Ugandan mobile number and you'll be sent a
-one-time code — which, in development, is written to the dev console rather
+one-time code - which, in development, is written to the dev console rather
 than an actual handset.
 
 ---
@@ -76,13 +76,13 @@ than an actual handset.
 Local-only tooling at **http://localhost:8000/dev**.
 
 - Fire real requests at real endpoints and watch the response
-- **SMS outbox** — read the OTP that was "sent" (codes are stored hashed, so
+- **SMS outbox** - read the OTP that was "sent" (codes are stored hashed, so
   this is the gateway's record, not the database's)
 - Live view of every table
 - Seed demo data, or reset the database
 
 The routes are never registered outside `local`, and carry an environment guard
-as well. It is a backend harness, not product UI — the app's look comes from
+as well. It is a backend harness, not product UI - the app's look comes from
 the design project.
 
 ---
@@ -96,7 +96,7 @@ cd mobile && npx tsc --noEmit     # typecheck
 
 **Tests run against MySQL, not SQLite.** The schema leans on strict mode
 (unsigned seat counts refusing to go negative) and on row locking, neither of
-which SQLite reproduces — testing there would pass while production behaved
+which SQLite reproduces - testing there would pass while production behaved
 differently.
 
 `php artisan test` expects a `twogende_testing` database to exist.
@@ -110,7 +110,7 @@ implements it.
 
 ### Money is always a "contribution"
 
-Never a fare, never a price — in column names, API fields and UI copy alike.
+Never a fare, never a price - in column names, API fields and UI copy alike.
 Uganda's PSV licensing rules apply to commercial passenger transport, and the
 whole product is positioned as cost-sharing. `contribution_per_seat`, not
 `price`.
@@ -120,7 +120,7 @@ practice, so integers avoid float rounding entirely.
 
 ### A phone number is the only credential
 
-There is no `password` column — it was deliberately dropped rather than made
+There is no `password` column - it was deliberately dropped rather than made
 nullable, because a nullable password invites code that treats "no password" as
 "any password". Proving you control a number is the whole of authentication,
 for signing in and signing up alike.
@@ -139,8 +139,7 @@ tested, including the bypass.
 
 ### Places are matched by identifier, then by distance
 
-Origins and destinations are chosen from Google Places, never typed free-hand —
-two people writing "Ntinda" have to resolve to the same place or search
+Origins and destinations are chosen from Google Places, never typed free-hand - two people writing "Ntinda" have to resolve to the same place or search
 silently returns nothing. Matching is exact `place_id` **or** within 3km, so
 "Ntinda" still finds "Ntinda Stage" 400m away.
 
@@ -149,8 +148,7 @@ that gets extracted and billed to you.
 
 ### Some things are visible but inert
 
-A control that cannot work yet is rendered as designed and left disabled —
-never faked, never silently removed. In-app calling, chat translation, and
+A control that cannot work yet is rendered as designed and left disabled - never faked, never silently removed. In-app calling, chat translation, and
 editing a published ride are all in this state. Each has a code comment saying
 why and an entry in [`LAUNCH-CHECKLIST.md`](LAUNCH-CHECKLIST.md).
 
@@ -165,7 +163,7 @@ why and an entry in [`LAUNCH-CHECKLIST.md`](LAUNCH-CHECKLIST.md).
   an authorised route. A photo of where somebody is standing is a photo of
   where somebody is.
 - **Live coordinates.** Location reporting is write-only. Only the latest point
-  is kept — no history table — and the only thing that escapes is the "your
+  is kept - no history table - and the only thing that escapes is the "your
   driver is here" notice generated when the two are close enough.
 
 ---
